@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Queue Data Structure Visualizer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#137fec",
+                        "background-light": "#f6f7f8",
+                        "background-dark": "#101922",
+                    },
+                    fontFamily: {
+                        "display": ["Space Grotesk"]
+                    },
+                    borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+                },
+            },
+        }
+    </script>
+    <style>
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-4px); }
+            20%, 40%, 60%, 80% { transform: translateX(4px); }
+        }
+        .queue-slot { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .cursor-blink { animation: blink 1s step-end infinite; }
+        @keyframes blink { 50% { opacity: 0; } }
+    </style>
+</head>
+<body class="bg-background-light dark:bg-background-dark font-display text-slate-900 dark:text-slate-100 min-h-screen flex flex-col overflow-x-hidden">
+
+<header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-slate-200 dark:border-slate-800 px-10 py-4 bg-white dark:bg-[#15202b] shadow-sm z-10">
+    <div class="flex items-center gap-4">
+        <div class="size-6 text-primary">
+            <span class="material-symbols-outlined text-[24px]">view_timeline</span>
+        </div>
+        <h2 class="text-slate-900 dark:text-white text-xl font-bold leading-tight tracking-[-0.015em]">Queue Data Structure Visualizer</h2>
+    </div>
+    <div class="flex items-center gap-4">
+        <button class="flex items-center gap-2 px-4 py-2 rounded bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
+            <span class="material-symbols-outlined text-[20px]">help</span>
+            <span class="text-sm font-medium">Tutorial</span>
+        </button>
+    </div>
+</header>
+
+<main class="flex-1 flex flex-col md:flex-row p-6 gap-6 max-w-[1600px] mx-auto w-full">
+    <div class="flex-1 flex flex-col gap-6">
+        <div class="bg-white dark:bg-[#15202b] rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden flex flex-col flex-1">
+            <div id="tab-container" class="flex border-b border-slate-200 dark:border-slate-800 px-4 gap-8 bg-slate-50 dark:bg-[#121c26]">
+                <a id="tab-linear" class="flex flex-col items-center justify-center border-b-[3px] border-b-primary text-primary pb-[13px] pt-4 cursor-pointer">
+                    <p class="text-sm font-bold leading-normal tracking-[0.015em]">Linear Queue</p>
+                </a>
+                <a id="tab-circular" class="flex flex-col items-center justify-center border-b-[3px] border-b-transparent text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300 pb-[13px] pt-4 transition-colors cursor-pointer">
+                    <p class="text-sm font-bold leading-normal tracking-[0.015em]">Circular Queue</p>
+                </a>
+            </div>
+            <div class="p-8 flex-1 flex flex-col">
+                <div class="flex justify-between items-center mb-8">
+                    <h3 id="queue-title" class="text-xl font-bold tracking-tight">Linear Queue (Size: 5)</h3>
+                    <div class="flex gap-4 text-sm font-medium">
+                        <div class="flex items-center gap-2">
+                            <div class="w-3 h-3 rounded-full bg-primary"></div>
+                            <span id="front-indicator">Front: -1</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <div class="w-3 h-3 rounded-full bg-emerald-500"></div>
+                            <span id="rear-indicator">Rear: -1</span>
+                        </div>
+                    </div>
+                </div>
+                <div id="viz-container" class="flex-1 flex items-center justify-center min-h-[350px]">
+                    </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="w-full md:w-80 lg:w-96 flex flex-col gap-6">
+        <div class="bg-white dark:bg-[#15202b] rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm p-6 flex flex-col gap-5">
+            <h3 class="text-lg font-bold flex items-center gap-2 border-b border-slate-200 dark:border-slate-800 pb-3">
+                <span class="material-symbols-outlined text-[20px] text-primary">tune</span>
+                Controls
+            </h3>
+            
+            <div class="flex flex-col gap-2 pb-2 border-b border-slate-100 dark:border-slate-800">
+                <label class="text-sm font-medium text-slate-700 dark:text-slate-300">Queue Capacity</label>
+                <div class="flex gap-2">
+                    <input id="size-input" class="form-input flex-1 rounded-lg border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white" type="number" value="5" min="2" max="10"/>
+                    <button id="set-size-btn" class="px-4 py-2 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 rounded-lg text-sm font-bold transition-colors">Apply</button>
+                </div>
+            </div>
+
+            <div class="flex flex-col gap-2">
+                <label class="text-sm font-medium text-slate-700 dark:text-slate-300" for="value-input">Value to Enqueue</label>
+                <input id="value-input" class="form-input w-full rounded-lg border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-white focus:border-primary focus:ring-primary/50" placeholder="e.g. 56" type="number"/>
+            </div>
+            
+            <div class="flex flex-col gap-3 mt-2">
+                <button id="enqueue-btn" class="w-full py-3 px-4 bg-primary hover:bg-primary/90 text-white rounded-lg font-bold flex items-center justify-center gap-2 transition-colors shadow-sm">
+                    <span class="material-symbols-outlined text-[20px]">input</span>
+                    Enqueue (Insert)
+                </button>
+                <button id="dequeue-btn" class="w-full py-3 px-4 bg-rose-500 hover:bg-rose-600 text-white rounded-lg font-bold flex items-center justify-center gap-2 transition-colors shadow-sm">
+                    <span class="material-symbols-outlined text-[20px]">output</span>
+                    Dequeue (Delete)
+                </button>
+                <button id="reset-btn" class="w-full py-2.5 px-4 bg-slate-200 hover:bg-slate-300 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-lg font-medium flex items-center justify-center gap-2 transition-colors mt-2 border border-slate-300 dark:border-slate-700">
+                    <span class="material-symbols-outlined text-[20px]">refresh</span>
+                    Reset Queue
+                </button>
+            </div>
+        </div>
+
+        <div class="bg-slate-900 rounded-xl border border-slate-800 shadow-sm flex flex-col flex-1 overflow-hidden font-mono text-sm min-h-[250px]">
+            <div class="bg-slate-800 px-4 py-2 flex items-center justify-between border-b border-slate-700">
+                <div class="flex items-center gap-2 text-slate-300">
+                    <span class="material-symbols-outlined text-[16px]">terminal</span>
+                    <span class="font-semibold text-xs tracking-wider uppercase">Execution Log</span>
+                </div>
+                <button id="clear-log-btn" class="text-slate-500 hover:text-slate-300 transition-colors">
+                    <span class="material-symbols-outlined text-[16px]">delete_sweep</span>
+                </button>
+            </div>
+            <div id="log-container" class="p-4 flex-1 overflow-y-auto flex flex-col gap-1 text-slate-300">
+                <div class="mt-2 text-slate-500 cursor-blink">_</div>
+            </div>
+        </div>
+    </div>
+</main>
+<script src="script.js"></script>
+</body>
+</html>
